@@ -4,10 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>准备食材｜二三郎的月饼工房</title>
+  <link rel="icon" type="image/png" href="assets/site-icon.png" />
+  <link rel="apple-touch-icon" href="assets/site-icon.png" />
   <style>
     * { box-sizing:border-box; } body { margin:0; min-width:320px; overflow:hidden; background:#e17243; font-family:"Microsoft YaHei",sans-serif; }
     .screen { position:relative; height:100svh; overflow:hidden; }
-    .background { position:absolute; inset:0; background:#e17243 url("assets/ingredients/ingredients-wall.png") center top / cover no-repeat; }
+    .background { position:absolute; inset:0; background:#db7044 url("assets/start/start-bg-sky.jpg") center top / cover no-repeat; }
     .background::before { content:""; position:absolute; top:28.1%; right:0; bottom:16%; left:0; background:url("assets/ingredients/ingredients-tile.png") center top / auto 100% repeat-x; }
     .background::after { content:""; position:absolute; right:0; bottom:0; left:0; height:16%; background:#f7e0b4 url("assets/ingredients/ingredients-bottom.png") center bottom / auto 100% repeat-x; }
     .artboard { position:absolute; top:0; left:50%; width:1080px; height:1920px; transform:translateX(-50%) scale(var(--scale,.5)); transform-origin:top center; }
@@ -22,7 +24,12 @@
     @keyframes bowl-pop { 0% { transform:scale(1); } 38% { transform:scale(1.18); } 64% { transform:scale(.89); } 84% { transform:scale(1.08); } 100% { transform:scale(1); } }
     @keyframes bubble-hop { 0% { transform:translateY(0); } 45% { transform:translateY(-22px); } 72% { transform:translateY(4px); } 100% { transform:translateY(0); } }
     .food.pop img { animation:ingredient-pop .34s cubic-bezier(.22,.8,.28,1); }.mixing-bowl.pop { animation:bowl-pop .32s cubic-bezier(.22,.8,.28,1); transform-origin:center center; }.prompt.pop img,.next.pop img { animation:bubble-hop .32s cubic-bezier(.22,.8,.28,1); }.next.double-pop img { animation:bubble-hop .26s cubic-bezier(.22,.8,.28,1) 2; } @keyframes button-pop { 0% { transform:scale(1); } 28% { transform:scale(.8); } 58% { transform:scale(1.22); } 80% { transform:scale(.93); } 100% { transform:scale(1); } }.next.click-pop img { animation:button-pop .32s cubic-bezier(.22,.8,.28,1); }
-  </style>
+    /* 触屏浏览器会把 :hover 停留在最后一次点按的素材上；仅在鼠标设备启用悬浮效果。 */
+    .food,.mixing-bowl,.prompt,.next { -webkit-tap-highlight-color:transparent; -webkit-appearance:none; appearance:none; outline:0; }
+    .food:focus,.food:focus-visible,.mixing-bowl:focus,.mixing-bowl:focus-visible,.prompt:focus,.prompt:focus-visible,.next:focus,.next:focus-visible { outline:0; box-shadow:none; }
+    .food.used { transform:none !important; }
+    @media (hover:none) { .food:hover { transform:none; } }
+  </style><link rel="stylesheet" href="mobile-interaction.css">
 </head>
 <body>
   <main class="screen"><div class="background"></div><div class="artboard" id="artboard">
@@ -47,7 +54,7 @@
     const order=['flour','sugar','oil'], names={flour:'面粉',sugar:'糖',oil:'油'}, bubbleFiles=['bubble-add-flour.png','bubble-add-sugar.png','bubble-add-oil.png']; let step=0, animating=false;
     function resize(){const scale=Math.min(1,innerHeight/1920), logical=innerWidth/scale, side=Math.max(0,(logical-1080)*.12), groupWidth=1036, characterScale=Math.min(1,logical/groupWidth), characterLeft=540-groupWidth*characterScale/2-side, characterRight=characterLeft+555*characterScale+side*2; artboard.style.setProperty('--scale',scale); artboard.style.setProperty('--side',side+'px'); artboard.style.setProperty('--character-scale',characterScale); artboard.style.setProperty('--character-left',characterLeft+'px'); artboard.style.setProperty('--character-right',characterRight+'px');} resize(); addEventListener('resize',resize);
     function pop(element,className='pop',duration=500){element.classList.remove(className); void element.offsetWidth; element.classList.add(className); setTimeout(()=>element.classList.remove(className),duration);}
-    document.querySelectorAll('.food').forEach(button=>button.addEventListener('click',()=>{if(animating||button.dataset.food!==order[step]) return; animating=true; button.classList.add('used'); pop(button,'pop',360); step++; bowl.src=`assets/ingredients/mixing-bowl-0${step}.png`; bowl.alt=`已加入${names[button.dataset.food]}的碗`; pop(mixingBowl,'pop',340); if(step===3){setTimeout(()=>{prompt.hidden=true; next.hidden=false; pop(next,'double-pop',560); leftCharacter.src='assets/ingredients/ingredients-character-left-smile.png'; rightCharacter.src='assets/ingredients/ingredients-character-right-smile.png';},340); return;} setTimeout(()=>{promptImage.src=`assets/ingredients/${bubbleFiles[step]}`; promptImage.alt=`加入${names[order[step]]}！`; pop(prompt,'pop',340); animating=false;},340);}));
+    document.querySelectorAll('.food').forEach(button=>button.addEventListener('click',()=>{if(button.classList.contains('used')){pop(button,'pop',360);return}if(animating||button.dataset.food!==order[step]) return; button.blur(); animating=true; button.classList.add('used'); pop(button,'pop',360); step++; bowl.src=`assets/ingredients/mixing-bowl-0${step}.png`; bowl.alt=`已加入${names[button.dataset.food]}的碗`; pop(mixingBowl,'pop',340); if(step===3){setTimeout(()=>{prompt.hidden=true; next.hidden=false; pop(next,'double-pop',560); leftCharacter.src='assets/ingredients/ingredients-character-left-smile.png'; rightCharacter.src='assets/ingredients/ingredients-character-right-smile.png';},340); return;} setTimeout(()=>{promptImage.src=`assets/ingredients/${bubbleFiles[step]}`; promptImage.alt=`加入${names[order[step]]}！`; pop(prompt,'pop',340); animating=false;},340);}));
     next.addEventListener('click',()=>{if(next.dataset.clicked)return;next.dataset.clicked='1';pop(next,'click-pop',350);setTimeout(()=>window.parent.postMessage({type:'open-knead'},'*'),320)});
     addEventListener('message',event=>{if(event.data?.type==='fade-ingredients'){artboard.classList.add('leaving');leftCharacter.src='assets/ingredients/ingredients-character-left.png';rightCharacter.src='assets/ingredients/ingredients-character-right.png'}if(event.data?.type==='characters-normal'){leftCharacter.src='assets/ingredients/ingredients-character-left.png';rightCharacter.src='assets/ingredients/ingredients-character-right.png'}if(event.data?.type==='characters-smile'){leftCharacter.src='assets/ingredients/ingredients-character-left-smile.png';rightCharacter.src='assets/ingredients/ingredients-character-right-smile.png'}});
   </script>

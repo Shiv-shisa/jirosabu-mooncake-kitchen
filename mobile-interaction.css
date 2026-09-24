@@ -1,0 +1,20 @@
+/* 触屏浏览器点击素材时不显示系统高亮或聚焦边框。 */
+html,body{width:100%;height:100%;overflow:hidden;overscroll-behavior:none}
+/* 后续步骤的格纹和人物位于父页面后景层；iframe 根节点必须透明，不能覆盖它。 */
+html{background:transparent!important}
+body{background:transparent!important}
+.game-shell,.game-shell.enter-ingredients,.background,.ingredients-backdrop{background-color:#db7044!important}
+.background,#stage-backdrop{background-color:#db7044!important}
+button,[role="button"]{-webkit-tap-highlight-color:transparent;-webkit-appearance:none;appearance:none;outline:0}
+button:focus,button:focus-visible,[role="button"]:focus,[role="button"]:focus-visible{outline:0!important;box-shadow:none!important}
+
+/* 手机会把鼠标悬浮状态停留在最后一次点按的元素上；关闭互动素材的触屏悬浮位移。 */
+@media (hover:none){
+  .food:hover,.filling:hover,.oven:hover,.tray:hover,.polaroid:hover,.next:hover,.prompt:hover,.mixing-bowl:hover,.s-button:hover,.start-button:hover,.ingredient:hover,.ingredient-next:hover,.next-button:hover{transform:none!important}
+  .food.used,.filling.used{transform:none!important}
+}
+
+/* 压模的位移优先级必须高于触屏浏览器保留的交互伪类。过渡必须预先存在，避免首次点击瞬移。 */
+.mold{transition:top .5s cubic-bezier(.02,.98,.18,1),transform .5s cubic-bezier(.02,.98,.18,1)!important}
+.mold.on-dough{transform:translateY(390px)!important}
+.food.used{pointer-events:auto!important}

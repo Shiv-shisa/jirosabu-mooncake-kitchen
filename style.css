@@ -5,14 +5,14 @@
 
 * { box-sizing: border-box; }
 
-body { margin: 0; min-width: 320px; background: #e17243; }
+body { margin: 0; min-width: 320px; background: #db7044; overscroll-behavior: none; overflow: hidden; }
 
 button { font: inherit; cursor: pointer; }
 
 .game-shell {
   isolation: isolate; min-height: 100svh; overflow: hidden; position: relative;
   display: grid; place-items: center; padding: 32px 20px 170px;
-  background: #e17243;
+  background: #db7044;
 }
 
 .moon { position: absolute; z-index: -1; width: min(31vw, 260px); aspect-ratio: 1; top: 7%; right: 13%; border-radius: 50%; background: #ffe8a8; box-shadow: 0 0 45px #ffe0a480; }
@@ -73,6 +73,7 @@ h2 { font-size: clamp(2rem, 7vw, 4rem); }
 .start-center { position:absolute; z-index:1; left:50%; top:25%; width:min(82vw,871px); transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; gap:clamp(18px,3vw,32px); }.start-title-art { display:block; width:100%; height:auto; }.start-subtitle-art { display:block; width:min(68%,590px); height:auto; }.start-button { border:0; outline:0; padding:0; background:transparent; box-shadow:none; width:min(43%,456px); border-radius:0; -webkit-tap-highlight-color:transparent; }.start-button:focus,.start-button:focus-visible { outline:0; }.start-button img { display:block; width:100%; height:auto; transition:transform .14s; }.start-button:hover img { transform:translateY(-4px) scale(1.03); }.start-button:active img { transform:translateY(4px) scale(.97); } @keyframes start-button-bounce { 0% { transform:scale(1); } 28% { transform:scale(.8); } 58% { transform:scale(1.22); } 80% { transform:scale(.93); } 100% { transform:scale(1); } } .start-button.clicked img { animation:start-button-bounce .32s cubic-bezier(.22,.8,.28,1) both; }
 .game-shell.enter-ingredients { background:#e17243 !important; }.game-shell.enter-ingredients > * { visibility:hidden; }
 #ingredients-frame,#knead-frame,#filling-frame,#mold-frame,#oven-frame,#finish-frame { position:fixed; z-index:9999; inset:0; display:block; width:100vw; height:100svh; border:0; opacity:0; transform:translateY(24px); pointer-events:none; background:#e17243; transition:opacity 1.3s cubic-bezier(.16,.88,.24,1), transform 1.3s cubic-bezier(.16,.88,.24,1); } #ingredients-frame.is-open,#knead-frame.is-open,#filling-frame.is-open,#mold-frame.is-open,#oven-frame.is-open,#finish-frame.is-open { opacity:1; transform:translateY(0); pointer-events:auto; }
+#stage-backdrop{position:fixed;z-index:9998;inset:0;display:none;overflow:hidden;background:#db7044 url("assets/start/start-bg-sky.jpg") center top/cover no-repeat}#stage-backdrop.is-open{display:block}#stage-backdrop::before{content:"";position:absolute;top:28.1%;right:0;bottom:16%;left:0;background:url("assets/ingredients/ingredients-tile.png") center top/auto 100% repeat-x}#stage-backdrop::after{content:"";position:absolute;right:0;bottom:0;left:0;height:16%;background:#f7e0b4 url("assets/ingredients/ingredients-bottom.png") center bottom/auto 100% repeat-x}.stage-artboard{position:absolute;z-index:1;top:0;left:50%;width:1080px;height:1920px;transform:translateX(-50%) scale(var(--stage-scale,.5));transform-origin:top center}.stage-character{position:absolute;bottom:0;display:block;pointer-events:none;transform-origin:left bottom}.stage-character-left{width:496px;left:var(--stage-character-left,32px);transform:scale(var(--stage-character-scale,1))}.stage-character-right{z-index:2;width:481px;left:var(--stage-character-right,587px);transform:scale(var(--stage-character-scale,1))}
 #knead-frame,#filling-frame,#mold-frame,#oven-frame,#finish-frame { background:transparent; }
 #start-screen { transition:opacity 1.6s cubic-bezier(.16,.88,.24,1), filter 1.6s cubic-bezier(.16,.88,.24,1); } .game-shell.start-leaving #start-screen { opacity:0; filter:blur(14px); }
 #ingredients-frame { transform:none; filter:blur(14px); transition:opacity 1.6s cubic-bezier(.16,.88,.24,1), filter 1.6s cubic-bezier(.16,.88,.24,1); } #ingredients-frame.is-open { transform:none; filter:blur(0); }
@@ -143,3 +144,8 @@ h2 { font-size: clamp(2rem, 7vw, 4rem); }
 .start-artboard .start-character-right { left:var(--start-character-right,538px) !important; transform:scale(var(--start-character-scale,1)) !important; transform-origin:left bottom !important; }
 .ingredients-artboard .ingredient-character-left { left:var(--ingredients-character-left,-19px); transform:scale(var(--ingredients-character-scale,1)); transform-origin:left bottom; }
 .ingredients-artboard .ingredient-character-right { left:var(--ingredients-character-right,538px); transform:scale(var(--ingredients-character-scale,1)); transform-origin:left bottom; }
+
+/* 后续步骤的持续墙面直接采用开始页的纯红色，不再引用色值略有差异的旧墙面图片。 */
+#stage-backdrop{background:#db7044 url("assets/start/start-bg-sky.jpg") center top/cover no-repeat!important}
+#filling-frame,#mold-frame,#oven-frame{transform:none;filter:none;transition:none}
+#filling-frame.is-open,#mold-frame.is-open,#oven-frame.is-open{transform:none;filter:none}

@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#824c31" />
     <title>二三郎的月饼工房</title>
-    <style>html,body{background:#e17243}</style>
+    <link rel="icon" type="image/png" href="assets/site-icon.png" />
+    <link rel="apple-touch-icon" href="assets/site-icon.png" />
+    <style>html,body{background:#db7044}</style><link rel="stylesheet" href="mobile-interaction.css">
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
@@ -104,10 +106,16 @@
         </div>
       </div>
     </main>
+    <div id="stage-backdrop" aria-hidden="true">
+      <div class="stage-artboard">
+        <img class="stage-character stage-character-left" src="assets/ingredients/ingredients-character-left.png" alt="" />
+        <img class="stage-character stage-character-right" src="assets/ingredients/ingredients-character-right.png" alt="" />
+      </div>
+    </div>
     <iframe id="ingredients-frame" src="ingredients.html?embedded=1" title="准备食材"></iframe>
     <iframe id="knead-frame" src="knead.html?foreground=1" title="揉面"></iframe>
     <iframe id="filling-frame" src="filling.html" title="包馅"></iframe>
-    <iframe id="mold-frame" src="mold.html" title="压月饼"></iframe>
+    <iframe id="mold-frame" src="mold.html?v=2" title="压月饼"></iframe>
     <iframe id="oven-frame" src="oven.html" title="烤月饼"></iframe>
     <iframe id="finish-frame" src="finish.html" title="保存月饼照片"></iframe>
     <script>
@@ -118,6 +126,7 @@
       });
       window.openIngredients = () => {
         document.querySelector('.game-shell').classList.add('start-leaving');
+        document.querySelector('#stage-backdrop').classList.add('is-open');
         if (ingredientsFrame.dataset.ready === '1') ingredientsFrame.classList.add('is-open');
         else ingredientsFrame.dataset.open = '1';
       };
@@ -126,27 +135,68 @@
       const moldFrame = document.querySelector('#mold-frame');
       const ovenFrame = document.querySelector('#oven-frame');
       const finishFrame = document.querySelector('#finish-frame');
+      const stepFrames = [fillingFrame, moldFrame, ovenFrame];
+      const setCharacters = type => {
+        ingredientsFrame.contentWindow.postMessage({type}, '*');
+        stepFrames.forEach(frame => frame.contentWindow.postMessage({type}, '*'));
+      };
+      const stageArtboard = document.querySelector('.stage-artboard');
+      const syncStageBackdrop = () => {
+        const scale = Math.min(1, innerHeight / 1920);
+        const logical = innerWidth / scale;
+        const side = Math.max(0, (logical - 1080) * .12);
+        const groupWidth = 1036;
+        const characterScale = Math.min(1, logical / groupWidth);
+        const characterLeft = 540 - groupWidth * characterScale / 2 - side;
+        const characterRight = characterLeft + 555 * characterScale + side * 2;
+        stageArtboard.style.setProperty('--stage-scale', scale);
+        stageArtboard.style.setProperty('--stage-character-scale', characterScale);
+        stageArtboard.style.setProperty('--stage-character-left', characterLeft + 'px');
+        stageArtboard.style.setProperty('--stage-character-right', characterRight + 'px');
+      };
+      syncStageBackdrop();
+      addEventListener('resize', syncStageBackdrop);
+      // 与食材→揉面一致：新页和旧页在同一段时间内交叉淡入淡出。
+      // Safari 不会可靠地合成两个跨 iframe 的“下层背景”，因此不再延后提层。
+      const crossFadeStep = (frame, enterMessage) => {
+        frame.style.removeProperty('z-index');
+        frame.classList.add('is-open');
+        setTimeout(() => frame.contentWindow.postMessage({type:'enter-step'}, '*'), 20);
+        if (enterMessage) setTimeout(() => frame.contentWindow.postMessage(enterMessage, '*'), 80);
+      };
+      // 所有步骤 iframe 共用移动端交互修正，避免浏览器默认的焦点框和残留 hover。
+      [ingredientsFrame, kneadFrame, fillingFrame, moldFrame, ovenFrame, finishFrame].forEach(frame => {
+        frame.addEventListener('load', () => {
+          const doc = frame.contentDocument;
+          if (!doc) return;
+          if (!doc.querySelector('link[data-mobile-interaction]')) {
+            const link = doc.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = 'mobile-interaction.css';
+            link.dataset.mobileInteraction = '1';
+            doc.head.appendChild(link);
+          }
+        });
+      });
       window.addEventListener('message', event => {
         if (event.data?.type === 'open-knead') {
           ingredientsFrame.contentWindow.postMessage({type:'fade-ingredients'}, '*');
           kneadFrame.classList.add('is-open');
         }
         if (event.data?.type === 'open-filling') {
+          setCharacters('characters-normal');
+          crossFadeStep(fillingFrame);
           kneadFrame.contentWindow.postMessage({type:'fade-knead'}, '*');
-          ingredientsFrame.contentWindow.postMessage({type:'characters-normal'}, '*');
-          fillingFrame.classList.add('is-open');
         }
         if (event.data?.type === 'open-mold') {
+          setCharacters('characters-normal');
+          crossFadeStep(moldFrame, {type:'enter-mold'});
           fillingFrame.contentWindow.postMessage({type:'fade-filling'}, '*');
-          ingredientsFrame.contentWindow.postMessage({type:'characters-normal'}, '*');
-          moldFrame.classList.add('is-open');
-          setTimeout(() => moldFrame.contentWindow.postMessage({type:'enter-mold'}, '*'), 80);
         }
         if (event.data?.type === 'open-oven') {
+          setCharacters('characters-normal');
+          crossFadeStep(ovenFrame, {type:'enter-oven',variant:event.data.variant||1});
           moldFrame.contentWindow.postMessage({type:'fade-mold'}, '*');
-          ingredientsFrame.contentWindow.postMessage({type:'characters-normal'}, '*');
-          ovenFrame.classList.add('is-open');
-          setTimeout(() => ovenFrame.contentWindow.postMessage({type:'enter-oven',variant:event.data.variant||1}, '*'), 80);
         }
         if (event.data?.type === 'open-finish') {
           ovenFrame.contentWindow.postMessage({type:'fade-oven'}, '*');
@@ -154,7 +204,7 @@
           finishFrame.classList.add('is-open');
           setTimeout(() => finishFrame.contentWindow.postMessage({type:'enter-finish',variant:event.data.variant||1}, '*'), 80);
         }
-        if (event.data?.type === 'characters-smile') ingredientsFrame.contentWindow.postMessage({type:'characters-smile'}, '*');
+        if (event.data?.type === 'characters-smile') setCharacters('characters-smile');
       });
     </script>
     <script src="script.js"></script>
