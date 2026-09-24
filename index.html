@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#824c31" />
+    <title>二三郎的月饼工房</title>
+    <style>html,body{background:#e17243}</style>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="game-shell" aria-labelledby="game-title">
+      <div class="stars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="moon" aria-hidden="true"></div>
+      <div class="cloud cloud-one" aria-hidden="true"></div>
+      <div class="cloud cloud-two" aria-hidden="true"></div>
+
+      <section class="title-card" id="start-screen">
+        <div class="start-backdrop" aria-hidden="true"></div>
+        <div class="start-artboard" id="start-artboard">
+        <img class="start-moon" src="assets/start/start-moon.png" alt="" />
+        <img class="start-star start-star-large" src="assets/start/start-star-large.png" alt="" />
+        <img class="start-star start-star-small-one" src="assets/start/start-star-small-01.png" alt="" />
+        <img class="start-star start-star-small-two" src="assets/start/start-star-small-01.png" alt="" />
+        <img class="start-cloud start-cloud-left" src="assets/start/start-cloud-left.png" alt="" />
+        <img class="start-cloud start-cloud-right" src="assets/start/start-cloud-right.png" alt="" />
+        <img class="start-character start-character-left" src="assets/start/start-character-left.png" alt="" />
+        <img class="start-character start-character-right" src="assets/start/start-character-right.png" alt="" />
+        <div class="start-center">
+          <img class="start-title-art" id="game-title" src="assets/start/start-title.png" alt="二三郎的月饼小厨房" />
+          <img class="start-subtitle-art" src="assets/start/start-subtitle.png" alt="中秋快乐！一起做月饼吧！" />
+          <button class="start-button" id="start-button" type="button" aria-label="开始吧" onclick="event.stopImmediatePropagation(); if(this.disabled)return; this.disabled=true; this.classList.add('clicked'); setTimeout(()=>window.openIngredients(),320);"><img src="assets/start/start-button-normal.png" alt="开始吧！" /></button>
+        </div>
+        </div>
+      </section>
+
+      <section class="cooking-screen ingredient-art-screen" id="cooking-screen" aria-live="polite">
+        <div class="ingredients-backdrop" aria-hidden="true"></div>
+        <div class="ingredients-artboard" id="ingredients-artboard">
+          <img class="ingredients-title" src="assets/ingredients/ingredients-title.png" alt="依次放入食材" />
+          <button class="ingredient ingredient-flour" type="button" data-ingredient="flour" aria-label="面粉"><img src="assets/ingredients/ingredient-flour.png" alt="" /></button>
+          <button class="ingredient ingredient-sugar" type="button" data-ingredient="sugar" aria-label="糖"><img src="assets/ingredients/ingredient-sugar.png" alt="" /></button>
+          <button class="ingredient ingredient-oil" type="button" data-ingredient="oil" aria-label="油"><img src="assets/ingredients/ingredient-oil.png" alt="" /></button>
+          <img class="ingredient-prop ingredient-whisk" src="assets/ingredients/prop-whisk.png" alt="" />
+          <img class="ingredient-prop ingredient-spatula" src="assets/ingredients/prop-spatula.png" alt="" />
+          <button class="mixing-bowl" id="mixing-bowl" type="button" aria-label="混合碗"><img id="mixing-bowl-art" src="assets/ingredients/mixing-bowl-00.png" alt="空碗" /></button>
+          <button class="ingredient-prompt" id="instruction" type="button" aria-label="加入面粉"><span>加入面粉！</span></button>
+          <p class="feedback" id="feedback" aria-live="polite"></p>
+          <button class="next-button ingredient-next" id="to-knead-button" type="button" hidden><span>开始揉面吧！</span></button>
+          <img class="ingredient-character ingredient-character-left" src="assets/start/start-character-left.png" alt="" />
+          <img class="ingredient-character ingredient-character-right" src="assets/start/start-character-right.png" alt="" />
+        </div>
+        <button id="back-button" type="button" hidden aria-label="回到首页"></button>
+      </section>
+
+      <section class="knead-screen" id="knead-screen" hidden aria-live="polite">
+        <header class="game-header">
+          <button class="back-button" id="knead-back-button" type="button" aria-label="回到首页">←</button>
+          <div><h2>把食材揉成面团</h2></div>
+        </header>
+        <p class="instruction" id="knead-instruction">按住面团绕圈，把它揉得圆滚滚！</p>
+        <div class="knead-board">
+          <button class="dough" id="dough" type="button" aria-label="面团，按住并绕圈来揉面"><span class="dough-shine"></span></button>
+          <div class="knead-lines" aria-hidden="true"><i></i><i></i><i></i></div>
+        </div>
+        <div class="meter" aria-label="揉面进度"><span id="knead-meter"></span></div>
+        <p class="feedback" id="knead-feedback"></p>
+        <button class="next-button" id="to-roll-button" type="button" hidden>下一步：擀皮 →</button>
+      </section>
+
+      <section class="roll-screen" id="roll-screen" hidden aria-live="polite">
+        <header class="game-header">
+          <button class="back-button" id="roll-back-button" type="button" aria-label="回到首页">←</button>
+          <div><h2>把面团擀开吧</h2></div>
+        </header>
+        <p class="instruction" id="roll-instruction">从面团中心向四个角拖动，把它摊开！</p>
+        <div class="roll-board">
+          <div class="flat-dough" id="flat-dough" role="button" tabindex="0" aria-label="面团，从中心向四个角拖动来摊开"></div>
+        </div>
+        <div class="meter" aria-label="擀皮进度"><span id="roll-meter"></span></div>
+        <p class="feedback" id="roll-feedback"></p>
+        <button class="next-button" id="to-fill-button" type="button" hidden>下一步：加馅 →</button>
+      </section>
+
+      <section class="fill-screen" id="fill-screen" hidden aria-live="polite">
+        <header class="game-header"><button class="back-button" id="fill-back-button" type="button" aria-label="回到首页">←</button><div><h2>做双黄莲蓉馅</h2></div></header>
+        <p class="instruction" id="fill-instruction">先把<strong>莲蓉</strong>放到面皮中央</p>
+        <div class="fill-tray"><div class="lotus-container" aria-label="装着莲蓉的小碗"><button class="filling lotus-button" data-fill="lotus" type="button" aria-label="莲蓉"><i aria-hidden="true"></i></button><span>莲蓉</span></div><div class="yolk-container" aria-label="装着两颗蛋黄的小碗"><button class="filling yolk-button" data-fill="yolk-one" type="button" aria-label="第一颗蛋黄"><i aria-hidden="true"></i></button><button class="filling yolk-button" data-fill="yolk-two" type="button" aria-label="第二颗蛋黄"><i aria-hidden="true"></i></button><span>双黄蛋</span></div></div>
+        <div class="fill-board"><div class="pastry-skin" id="pastry-skin"><span class="lotus-paste" id="lotus-paste" hidden></span><span class="yolk yolk-one" id="yolk-one" hidden></span><span class="yolk yolk-two" id="yolk-two" hidden></span></div></div>
+        <p class="feedback" id="fill-feedback"></p><button class="next-button" id="to-wrap-button" type="button" hidden>下一步：包馅 →</button>
+      </section>
+
+      <section class="wrap-screen" id="wrap-screen" hidden aria-live="polite"><header class="game-header"><button class="back-button" id="wrap-back-button" type="button">←</button><h2>把馅包起来</h2></header><p class="instruction" id="wrap-instruction">点击面皮四下，把馅包起来！</p><button class="wrapping-dough" id="wrapping-dough" type="button" aria-label="点击包馅"><span id="wrap-filling"></span></button><p class="feedback" id="wrap-feedback"></p><button class="next-button" id="to-mold-button" type="button" hidden>下一步：压模 →</button></section>
+      <section class="mold-screen" id="mold-screen" hidden aria-live="polite"><header class="game-header"><button class="back-button" id="mold-back-button" type="button">←</button><h2>压出月饼吧</h2></header><p class="instruction" id="mold-instruction">点击模具，把它放到面团上！</p><button class="mold" id="mold" type="button" aria-label="月饼模具"></button><div class="mold-board"><div class="mold-dough" id="mold-dough"></div></div><p class="feedback" id="mold-feedback"></p><button class="next-button" id="to-bake-button" type="button" hidden>送进烤箱 →</button></section>
+      <section class="bake-screen" id="bake-screen" hidden aria-live="polite"><header class="game-header"><button class="back-button" id="bake-back-button" type="button">←</button><h2>送进烤箱</h2></header><p class="instruction" id="bake-instruction">点击月饼，把它送进烤箱！</p><div class="square-tray" id="raw-tray"><button class="bake-mooncake" id="bake-mooncake" type="button" aria-label="月饼"></button></div><div class="bake-clock" id="bake-clock" hidden aria-label="烘烤计时"><i></i></div><button class="oven" id="oven" type="button" aria-label="烤箱"><span class="oven-window"></span></button><div class="square-tray baked-tray" id="baked-tray" hidden><div class="finished-mooncake" id="tray-mooncake"></div></div><button class="next-button" id="finish-button" type="button" hidden>下一步 →</button><div class="plate" id="plate" hidden><div class="finished-mooncake" id="finished-mooncake"></div></div><p class="feedback" id="bake-feedback"></p></section>
+
+      <div class="kitchen" aria-hidden="true">
+        <div class="window"><span class="window-cross"></span></div>
+        <div class="shelf"><span class="jar jar-pink"></span><span class="jar jar-cream"></span><span class="jar jar-green"></span></div>
+        <div class="counter">
+          <div class="bowl"><span></span></div>
+          <div class="rolling-pin"></div>
+          <div class="moon-cake"></div>
+        </div>
+      </div>
+    </main>
+    <iframe id="ingredients-frame" src="ingredients.html?embedded=1" title="准备食材"></iframe>
+    <iframe id="knead-frame" src="knead.html?foreground=1" title="揉面"></iframe>
+    <iframe id="filling-frame" src="filling.html" title="包馅"></iframe>
+    <iframe id="mold-frame" src="mold.html" title="压月饼"></iframe>
+    <iframe id="oven-frame" src="oven.html" title="烤月饼"></iframe>
+    <iframe id="finish-frame" src="finish.html" title="保存月饼照片"></iframe>
+    <script>
+      const ingredientsFrame = document.querySelector('#ingredients-frame');
+      ingredientsFrame.addEventListener('load', () => {
+        ingredientsFrame.dataset.ready = '1';
+        if (ingredientsFrame.dataset.open === '1') ingredientsFrame.classList.add('is-open');
+      });
+      window.openIngredients = () => {
+        document.querySelector('.game-shell').classList.add('start-leaving');
+        if (ingredientsFrame.dataset.ready === '1') ingredientsFrame.classList.add('is-open');
+        else ingredientsFrame.dataset.open = '1';
+      };
+      const kneadFrame = document.querySelector('#knead-frame');
+      const fillingFrame = document.querySelector('#filling-frame');
+      const moldFrame = document.querySelector('#mold-frame');
+      const ovenFrame = document.querySelector('#oven-frame');
+      const finishFrame = document.querySelector('#finish-frame');
+      window.addEventListener('message', event => {
+        if (event.data?.type === 'open-knead') {
+          ingredientsFrame.contentWindow.postMessage({type:'fade-ingredients'}, '*');
+          kneadFrame.classList.add('is-open');
+        }
+        if (event.data?.type === 'open-filling') {
+          kneadFrame.contentWindow.postMessage({type:'fade-knead'}, '*');
+          ingredientsFrame.contentWindow.postMessage({type:'characters-normal'}, '*');
+          fillingFrame.classList.add('is-open');
+        }
+        if (event.data?.type === 'open-mold') {
+          fillingFrame.contentWindow.postMessage({type:'fade-filling'}, '*');
+          ingredientsFrame.contentWindow.postMessage({type:'characters-normal'}, '*');
+          moldFrame.classList.add('is-open');
+          setTimeout(() => moldFrame.contentWindow.postMessage({type:'enter-mold'}, '*'), 80);
+        }
+        if (event.data?.type === 'open-oven') {
+          moldFrame.contentWindow.postMessage({type:'fade-mold'}, '*');
+          ingredientsFrame.contentWindow.postMessage({type:'characters-normal'}, '*');
+          ovenFrame.classList.add('is-open');
+          setTimeout(() => ovenFrame.contentWindow.postMessage({type:'enter-oven',variant:event.data.variant||1}, '*'), 80);
+        }
+        if (event.data?.type === 'open-finish') {
+          ovenFrame.contentWindow.postMessage({type:'fade-oven'}, '*');
+          ovenFrame.classList.add('leaving');
+          finishFrame.classList.add('is-open');
+          setTimeout(() => finishFrame.contentWindow.postMessage({type:'enter-finish',variant:event.data.variant||1}, '*'), 80);
+        }
+        if (event.data?.type === 'characters-smile') ingredientsFrame.contentWindow.postMessage({type:'characters-smile'}, '*');
+      });
+    </script>
+    <script src="script.js"></script>
+  </body>
+</html>

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>揉面｜二三郎的月饼工房</title>
+  <script>if(new URLSearchParams(location.search).has('foreground'))document.documentElement.classList.add('foreground');</script>
+  <style>
+    *{box-sizing:border-box} body{margin:0;min-width:320px;overflow:hidden;background:#e17243;font-family:"Microsoft YaHei",sans-serif}.screen{position:relative;height:100svh;overflow:hidden}.background{position:absolute;inset:0;background:#e17243 url("assets/ingredients/ingredients-wall.png") center top / cover no-repeat}.background::before{content:"";position:absolute;top:28.1%;right:0;bottom:16%;left:0;background:url("assets/ingredients/ingredients-tile.png") center top / auto 100% repeat-x}.background::after{content:"";position:absolute;right:0;bottom:0;left:0;height:16%;background:#f7e0b4 url("assets/ingredients/ingredients-bottom.png") center bottom / auto 100% repeat-x}.artboard{position:absolute;top:0;left:50%;width:1080px;height:1920px;transform:translateX(-50%) scale(var(--scale,.5));transform-origin:top center}.artboard img{position:absolute;display:block;pointer-events:none;user-select:none}.title{width:459px;top:209px;left:310px}.board{position:absolute;z-index:1;width:906px;height:621px;top:409px;left:87px}.dough{position:absolute;z-index:2;left:540px;top:721px;width:253px;height:248px;padding:0;border:0;background:transparent;cursor:grab;touch-action:none;transform:translate(-50%,-50%);transform-origin:center;will-change:transform;transition:transform .15s cubic-bezier(.16,.88,.24,1)}.dough:active{cursor:grabbing}.dough img{position:static;width:100%;height:100%;object-fit:contain}.dough.kneading img{animation:press .18s ease-out}.prompt,.next{position:absolute;z-index:3;display:grid;place-items:center;padding:0;border:0;background:transparent}.prompt{width:864px;height:227px;top:1110px;left:108px}.next{width:571px;height:230px;top:1104px;left:255px;cursor:pointer}.prompt img,.next img{position:static;width:auto;height:auto;max-width:100%;max-height:100%}.prompt[hidden],.next[hidden]{display:none}.character{bottom:0;z-index:1}.left{width:496px;left:calc(32px - var(--side,0px) + var(--overlap,0px))}.right{width:481px;left:calc(587px + var(--side,0px) - var(--overlap,0px));z-index:2;transform:scale(.97);transform-origin:center bottom}@keyframes press{50%{transform:scale(.9,.82)}}@keyframes pop{0%{transform:translateY(0)}45%{transform:translateY(-22px)}72%{transform:translateY(4px)}100%{transform:translateY(0)}}.prompt.pop img,.next.pop img{animation:pop .38s cubic-bezier(.22,.8,.28,1)}.next.double-pop img{animation:pop .26s cubic-bezier(.22,.8,.28,1) 2}
+    html.foreground,html.foreground body{background:transparent!important}html.foreground .background,html.foreground .character{display:none}.artboard .title,.artboard .board,.artboard .dough,.artboard .prompt,.artboard .next{transition:opacity .52s ease-out,transform .52s ease-out}.artboard.leaving .title,.artboard.leaving .board,.artboard.leaving .dough,.artboard.leaving .prompt,.artboard.leaving .next{opacity:0;pointer-events:none}@keyframes button-pop{0%{transform:scale(1)}28%{transform:scale(.8)}58%{transform:scale(1.22)}80%{transform:scale(.93)}100%{transform:scale(1)}}.next.click-pop img{animation:button-pop .32s cubic-bezier(.22,.8,.28,1)}
+    .prompt{top:1090px!important}.next{top:1094px!important}.board{width:724.8px;height:496.8px;top:471.1px;left:177.6px}
+  </style>
+</head>
+<body>
+  <main class="screen"><div class="background"></div><div class="artboard" id="artboard">
+    <img class="title" src="assets/knead/knead-title.png" alt="开始揉面吧！" />
+    <img class="board" src="assets/knead/knead-board.png" alt="揉面板" />
+    <button class="dough" id="dough" aria-label="按住面团转圈揉动"><img id="dough-image" src="assets/knead/dough-01.png" alt="面团" /></button>
+    <button class="prompt" id="prompt" type="button"><img id="prompt-image" src="assets/knead/bubble-knead-01.png" alt="按住面团，转圈揉一揉" /></button>
+    <button class="next" id="next" type="button" hidden><img src="assets/knead/button-next.png" alt="去压模吧！" /></button>
+    <img class="character left" id="character-left" src="assets/ingredients/ingredients-character-left.png" alt="" /><img class="character right" id="character-right" src="assets/ingredients/ingredients-character-right.png" alt="" />
+  </div></main>
+  <script>
+    const artboard=document.querySelector('#artboard'), dough=document.querySelector('#dough'), doughImage=document.querySelector('#dough-image'), prompt=document.querySelector('#prompt'), promptImage=document.querySelector('#prompt-image'), next=document.querySelector('#next'), leftCharacter=document.querySelector('#character-left'), rightCharacter=document.querySelector('#character-right');
+    function resize(){const scale=Math.min(1,innerHeight/1920),logical=innerWidth/scale,side=Math.max(0,(logical-1080)*.12),overlap=Math.max(0,(1080-logical)*.4);artboard.style.setProperty('--scale',scale);artboard.style.setProperty('--side',side+'px');artboard.style.setProperty('--overlap',overlap+'px')}resize();addEventListener('resize',resize);
+    let active=false,lastAngle=0,turns=0,stage=0,done=false;
+    function pointAngle(event){const rect=dough.getBoundingClientRect(),x=event.clientX-(rect.left+rect.width/2),y=event.clientY-(rect.top+rect.height/2);return Math.atan2(y,x)}
+    function pop(element,className='pop',duration=450){element.classList.remove(className);void element.offsetWidth;element.classList.add(className);setTimeout(()=>element.classList.remove(className),duration)}
+    function update(){const level=Math.min(turns/6,1);const nextStage=level>=1?3:level>=.66?2:level>=.33?1:0;if(nextStage!==stage){stage=nextStage;if(stage===1){doughImage.src='assets/knead/dough-02.png';promptImage.src='assets/knead/bubble-knead-02.png';promptImage.alt='揉得真不错，继续转圈！';pop(prompt)}if(stage===2){doughImage.src='assets/knead/dough-03.png';promptImage.src='assets/knead/bubble-knead-02.png';pop(prompt)}if(stage===3){done=true;prompt.hidden=true;next.hidden=false;pop(next,'double-pop',560);leftCharacter.src='assets/ingredients/ingredients-character-left-smile.png';rightCharacter.src='assets/ingredients/ingredients-character-right-smile.png';window.parent.postMessage({type:'characters-smile'},'*')}}const stageGrowth=stage>=2?.18:stage===1?.08:0;const growth=1+level*.28+stageGrowth;const orbit=turns*Math.PI*2;const orbitX=Math.cos(orbit)*32,orbitY=Math.sin(orbit)*24;dough.style.transform=`translate(-50%,-50%) translate(${orbitX}px,${orbitY}px) scale(${growth})`}
+    dough.addEventListener('pointerdown',event=>{active=true;lastAngle=pointAngle(event);dough.setPointerCapture(event.pointerId);dough.classList.add('kneading')});
+    dough.addEventListener('pointermove',event=>{if(!active)return;const angle=pointAngle(event);let delta=angle-lastAngle;if(delta>Math.PI)delta-=Math.PI*2;if(delta<-Math.PI)delta+=Math.PI*2;turns+=Math.abs(delta)/(Math.PI*2);lastAngle=angle;update()});
+    function stop(){active=false;dough.classList.remove('kneading')}dough.addEventListener('pointerup',stop);dough.addEventListener('pointercancel',stop);
+    next.addEventListener('click',()=>{if(next.dataset.clicked)return;next.dataset.clicked='1';pop(next,'click-pop',350);setTimeout(()=>window.parent.postMessage({type:'open-filling'},'*'),320)});
+    addEventListener('message',event=>{if(event.data?.type==='fade-knead')artboard.classList.add('leaving')});
+  </script>
+</body>
+</html>
